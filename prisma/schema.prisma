@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  passwordHash String?
+  name         String
+  /// e.g. /uploads/avatars/...
+  avatarUrl    String?
+  dateOfBirth  DateTime?
+  posts        Post[]
+  postLikes    PostLike[]
+  postComments PostComment[]
+  brochures    Brochure[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Post {
+  id          String           @id @default(cuid())
+  type        MemorialPostType
+  content     String
+  /// JSON: [{ "type": "image"|"video", "url": "/uploads/posts/..." }]
+  attachments Json?
+  authorId    String
+  author      User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes       PostLike[]
+  comments    PostComment[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([authorId, createdAt])
+  @@index([createdAt])
+}
+
+model PostLike {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
+
+model PostComment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content   String
+  createdAt DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
+
+enum MemorialPostType {
+  memory
+  tribute
+  condolence
+}
+
+enum BrochurePrivacy {
+  public
+  family
+}
+
+model Brochure {
+  id           String          @id @default(cuid())
+  deceasedName String
+  dateOfBirth  String?
+  dateOfDeath  String?
+  bio          String          @default("")
+  /// JSON: [{ id, title, content }]
+  sections     Json            @default("[]")
+  privacy      BrochurePrivacy @default(public)
+  accessCode   String?
+  creatorId    String
+  creator      User            @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([creatorId, updatedAt])
+}

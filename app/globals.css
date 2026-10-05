@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F6F4F1;   /* Euloges ivory */
+  --foreground: #2F2F2F;   /* Soft charcoal */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1E1E1E;
+    --foreground: #F6F4F1;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Feed: room for floating compose button on mobile */
+.feed-scroll-pad {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 640px) {
+  .feed-scroll-pad {
+    padding-bottom: 5rem;
+  }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom show-password buttons: hide native field decorations so only our icon shows. */
+.auth-password-field::-ms-reveal,
+.auth-password-field::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.auth-password-field::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Chromium: password field “reveal” lives in this inner container */
+.auth-password-field::-webkit-textfield-decoration-container {
+  display: none !important;
+}
+
+/* Memorial brochure: embossed Euloges watermark & attribution */
+.euloges-brochure-shell {
+  isolation: isolate;
+}
+
+.euloges-brochure-watermark-layer {
+  z-index: 0;
+}
+
+.euloges-brochure-watermark {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  font-size: clamp(3.5rem, 14vw, 7rem);
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-indent: 0.35em;
+  color: rgba(47, 47, 47, 0.06);
+  text-shadow:
+    1px 1px 0 rgba(255, 255, 255, 0.85),
+    -1px -1px 0 rgba(0, 0, 0, 0.04);
+  user-select: none;
+  white-space: nowrap;
+}
+
+.euloges-brochure-brand-footer {
+  position: relative;
+  z-index: 2;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(246, 244, 241, 0.92) 40%
+  );
+}
+
+.euloges-brochure-brand-footer--compact {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+}
+
+/* Profile page cover */
+.profile-cover-shine {
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(255, 255, 255, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 80%, rgba(255, 255, 255, 0.08), transparent 50%);
+}
+
+@media print {
+  .euloges-brochure-watermark {
+    color: rgba(0, 0, 0, 0.05);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .euloges-brochure-brand-footer {
+    background: transparent;
+    border-top-color: rgba(0, 0, 0, 0.12);
+  }
+}
